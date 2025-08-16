@@ -1,0 +1,31 @@
+# Node
+node_modules/
+
+# Dart/Flutter
+.dart_tool/
+.build/
+build/
+.flutter-plugins*
+.packages
+pubspec.lock
+
+# macOS
+.DS_Store
+
+# Env
+.env
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Prisma
+backend/prisma/*.db
+
+# Firebase generated files can be re-fetched
+frontend/macos/Runner/GoogleService-Info.plist
+frontend/ios/Runner/GoogleService-Info.plist
+frontend/android/app/google-services.json
+
+# IDE
+.idea/
+.vscode/
