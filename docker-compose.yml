@@ -14,5 +14,20 @@ services:
       - mysql_data:/var/lib/mysql
     command: ["--default-authentication-plugin=mysql_native_password", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: k_medical_backend
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=mysql://root:password@mysql:3306/k_medical
+      - CORS_ORIGIN=http://localhost:5173
+    depends_on:
+      - mysql
+    ports:
+      - "4000:4000"
+
 volumes:
   mysql_data:
