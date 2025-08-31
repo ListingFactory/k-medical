@@ -347,4 +347,194 @@ router.delete('/:id/images/:imageId', authenticateToken, requireAdmin, async (re
   }
 });
 
+// 클리닉 등록 API
+router.post('/clinics', async (req, res) => {
+  try {
+    const {
+      name,
+      address,
+      phone,
+      website,
+      description,
+      specialties,
+      images,
+      status = 'pending'
+    } = req.body;
+
+    // 필수 필드 검증
+    if (!name || !address || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: '필수 필드가 누락되었습니다: name, address, phone'
+      });
+    }
+
+    // 클리닉 생성
+    const clinic = await prisma.business.create({
+      data: {
+        name,
+        address,
+        phone,
+        website: website || null,
+        description: description || null,
+        type: 'CLINIC',
+        status,
+        metadata: {
+          specialties: specialties || [],
+          images: images || [],
+          createdAt: new Date().toISOString()
+        }
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: '클리닉이 성공적으로 등록되었습니다',
+      data: clinic
+    });
+
+  } catch (error) {
+    console.error('클리닉 등록 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다'
+    });
+  }
+});
+
+// 클리닉 목록 조회
+router.get('/clinics', async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const where = {
+      type: 'CLINIC',
+      ...(status && { status: String(status) })
+    };
+
+    const [clinics, total] = await Promise.all([
+      prisma.business.findMany({
+        where,
+        skip,
+        take: Number(limit),
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.business.count({ where })
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        clinics,
+        pagination: {
+          page: Number(page),
+          limit: Number(limit),
+          total,
+          totalPages: Math.ceil(total / Number(limit))
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('클리닉 목록 조회 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다'
+    });
+  }
+});
+
+// 클리닉 상세 조회
+router.get('/clinics/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const clinic = await prisma.business.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!clinic) {
+      return res.status(404).json({
+        success: false,
+        message: '클리닉을 찾을 수 없습니다'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: clinic
+    });
+
+  } catch (error) {
+    console.error('클리닉 상세 조회 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다'
+    });
+  }
+});
+
+// 클리닉 상태 업데이트 (승인/거부)
+router.patch('/clinics/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, reason } = req.body;
+
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: '유효하지 않은 상태입니다'
+      });
+    }
+
+    const clinic = await prisma.business.update({
+      where: { id: Number(id) },
+      data: {
+        status,
+        metadata: {
+          ...(reason && { rejectionReason: reason }),
+          updatedAt: new Date().toISOString()
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      message: '클리닉 상태가 업데이트되었습니다',
+      data: clinic
+    });
+
+  } catch (error) {
+    console.error('클리닉 상태 업데이트 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다'
+    });
+  }
+});
+
+// 클리닉 삭제
+router.delete('/clinics/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.business.delete({
+      where: { id: Number(id) }
+    });
+
+    res.json({
+      success: true,
+      message: '클리닉이 삭제되었습니다'
+    });
+
+  } catch (error) {
+    console.error('클리닉 삭제 오류:', error);
+    res.status(500).json({
+      success: false,
+      message: '서버 오류가 발생했습니다'
+    });
+  }
+});
+
 export default router;

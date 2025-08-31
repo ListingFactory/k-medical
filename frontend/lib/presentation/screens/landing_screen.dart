@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/location_service.dart';
 import '../../data/models/clinic.dart';
 import '../widgets/global_layout.dart';
+import 'clinic_form_screen.dart';
 
 class LandingScreen extends StatefulWidget {
   final Clinic? clinic;
@@ -32,6 +34,8 @@ class _LandingScreenState extends State<LandingScreen> {
   static const double _clinicLng = 127.0276;
   static const String _clinicAddressEn = 'Gangnam-gu, Seoul, South Korea';
   double? _distanceKm; // when location is available
+  // 권한: 관리자/병원회원만 폼 진입 가능 (실제 앱에서는 로그인/권한 시스템과 연결)
+  bool _canRegisterClinic = true; // TODO: Auth/Role 연동(관리자가 병원회원 권한 부여 시 true)
 
   @override
   void initState() {
@@ -76,6 +80,13 @@ class _LandingScreenState extends State<LandingScreen> {
               child: _buildTopMenu(),
             ),
           ),
+          floatingActionButton: _canRegisterClinic
+              ? FloatingActionButton.extended(
+                  onPressed: _openClinicRegistrationForm,
+                  icon: const Icon(Icons.add_business),
+                  label: const Text('Register Clinic'),
+                )
+              : null,
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -2143,6 +2154,24 @@ class _LandingScreenState extends State<LandingScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _openClinicRegistrationForm() async {
+    final result = await Navigator.of(context).push<Map<String, dynamic>>(
+      MaterialPageRoute(
+        builder: (_) => const ClinicFormScreen(),
+        fullscreenDialog: true,
+      ),
+    );
+    if (result != null && mounted) {
+      // TODO: 백엔드/Firestore에 업로드 로직 연결
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Clinic draft collected. (Connect backend next)')),
+      );
+      // 디버그 출력
+      // ignore: avoid_print
+      print('ClinicDraft JSON: $result');
+    }
   }
 }
 
