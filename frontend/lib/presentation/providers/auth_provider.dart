@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../../core/services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -8,6 +10,8 @@ class AuthProvider with ChangeNotifier {
   User? _currentUser;
   bool _isLoading = false;
   String? _error;
+  String? _adminToken;
+  Map<String, dynamic>? _adminUser;
 
   // Getters
   User? get currentUser => _currentUser;
@@ -17,8 +21,15 @@ class AuthProvider with ChangeNotifier {
   bool get isLoggedIn => _currentUser != null;
   User? get user => _currentUser;
   
-  // 사용자 타입 가져오기 (임시로 business로 설정)
-  String get userType => 'business';
+  String? _userRole; // 'admin' | 'clinic' | 'user'
+  String get userType => _userRole ?? 'user';
+  bool get isAdmin => _userRole == 'admin';
+  bool get isHospitalUser => _userRole == 'clinic';
+  
+  // 관리자 관련 getters
+  String? get adminToken => _adminToken;
+  Map<String, dynamic>? get adminUser => _adminUser;
+  bool get isAdminLoggedIn => _adminToken != null;
 
   AuthProvider() {
     _initializeAuth();
@@ -29,8 +40,24 @@ class AuthProvider with ChangeNotifier {
     _currentUser = _authService.currentUser;
     _authService.authStateChanges.listen((User? user) {
       _currentUser = user;
-      notifyListeners();
+      if (user != null) {
+        _loadUserRole(user.uid);
+      } else {
+        _userRole = null;
+        notifyListeners();
+      }
     });
+  }
+
+  Future<void> _loadUserRole(String uid) async {
+    try {
+      final role = await _authService.getUserRole(uid);
+      _userRole = role ?? 'user';
+    } catch (_) {
+      _userRole = 'user';
+    } finally {
+      notifyListeners();
+    }
   }
 
   // 로딩 상태 설정
@@ -49,6 +76,90 @@ class AuthProvider with ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  // 관리자 로그인
+  Future<bool> adminLogin(String email, String password) async {
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      final response = await http.post(
+        Uri.parse('http://localhost:4001/api/admin/auth/login'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'email': email,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _adminToken = data['token'];
+        _adminUser = data['user'];
+        _userRole = 'admin';
+        notifyListeners();
+        return true;
+      } else {
+        final errorData = json.decode(response.body);
+        _setError(errorData['error'] ?? '로그인에 실패했습니다.');
+        return false;
+      }
+    } catch (e) {
+      _setError('네트워크 오류가 발생했습니다: ${e.toString()}');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // 관리자 로그아웃
+  Future<void> adminLogout() async {
+    try {
+      _setLoading(true);
+      
+      if (_adminToken != null) {
+        await http.post(
+          Uri.parse('http://localhost:4001/api/admin/auth/logout'),
+          headers: {
+            'Authorization': 'Bearer $_adminToken',
+            'Content-Type': 'application/json',
+          },
+        );
+      }
+    } catch (e) {
+      // 로그아웃 실패해도 클라이언트에서는 로그아웃 처리
+      print('Admin logout error: $e');
+    } finally {
+      _adminToken = null;
+      _adminUser = null;
+      _userRole = null;
+      _setLoading(false);
+      notifyListeners();
+    }
+  }
+
+  // 일반 로그아웃 (Firebase)
+  Future<void> signOut() async {
+    try {
+      _setLoading(true);
+      await _authService.signOut();
+    } catch (e) {
+      _setError(_getErrorMessage(e));
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // 통합 로그아웃 (관리자 + 일반)
+  Future<void> logout() async {
+    if (isAdminLoggedIn) {
+      await adminLogout();
+    } else {
+      await signOut();
+    }
   }
 
   // 회원가입
@@ -94,18 +205,6 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       _setError(_getErrorMessage(e));
       return false;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  // 로그아웃
-  Future<void> signOut() async {
-    try {
-      _setLoading(true);
-      await _authService.signOut();
-    } catch (e) {
-      _setError(_getErrorMessage(e));
     } finally {
       _setLoading(false);
     }

@@ -32,6 +32,8 @@ class AuthService {
         'uid': userCredential.user!.uid,
         'email': email,
         'name': name,
+        'role': 'user', // 기본 역할: 일반회원
+        'locale': 'en',
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
       });
@@ -40,6 +42,21 @@ class AuthService {
     } catch (e) {
       print('회원가입 실패: $e');
       rethrow;
+    }
+  }
+
+  // 사용자 역할 가져오기
+  Future<String?> getUserRole(String uid) async {
+    try {
+      final doc = await _firestore.collection(AppConstants.usersCollection).doc(uid).get();
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        return data['role'] as String?;
+      }
+      return null;
+    } catch (e) {
+      print('사용자 역할 로드 실패: $e');
+      return null;
     }
   }
 

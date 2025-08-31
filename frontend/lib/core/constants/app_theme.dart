@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
@@ -120,8 +121,8 @@ class AppTheme {
       ),
     ),
     
-    // 텍스트 테마
-    textTheme: const TextTheme(
+    // 텍스트 테마 (Noto Sans)
+    textTheme: GoogleFonts.notoSansTextTheme(const TextTheme(
       displayLarge: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.w800,
@@ -194,7 +195,7 @@ class AppTheme {
         color: AppColors.textSecondary,
         letterSpacing: 0.1,
       ),
-    ),
+    )),
     
     // 아이콘 테마
     iconTheme: const IconThemeData(

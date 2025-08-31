@@ -1,4 +1,4 @@
-package com.example.healing_on
+package com.example.k_medical
 
 import io.flutter.embedding.android.FlutterActivity
 

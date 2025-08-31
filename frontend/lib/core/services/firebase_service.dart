@@ -2,13 +2,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../constants/app_constants.dart';
-import '../../data/models/massage_shop.dart';
+
 
 class FirebaseService {
   static FirebaseFirestore? _firestore;
   static FirebaseAuth? _auth;
   static FirebaseStorage? _storage;
+  static FirebaseMessaging? _messaging;
 
   // Firebase Firestore 인스턴스
   static FirebaseFirestore get firestore {
@@ -26,6 +29,12 @@ class FirebaseService {
   static FirebaseStorage get storage {
     _storage ??= FirebaseStorage.instance;
     return _storage!;
+  }
+
+  // Firebase Messaging 인스턴스
+  static FirebaseMessaging get messaging {
+    _messaging ??= FirebaseMessaging.instance;
+    return _messaging!;
   }
 
   // Firebase 초기화
@@ -46,6 +55,45 @@ class FirebaseService {
       persistenceEnabled: true,
       cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
     );
+  }
+
+  // 푸시 알림 초기화 (권한 요청 + 토큰 저장)
+  static Future<void> initializePushNotifications() async {
+    try {
+      // 웹은 Service Worker 미설정 환경에서 에러가 잦으므로 전체 스킵
+      if (kIsWeb) {
+        return;
+      }
+      // iOS 권한 요청
+      await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      // FCM 토큰 획득
+      final token = await messaging.getToken();
+      if (token != null && FirebaseService.currentUser != null) {
+        await firestore
+            .collection(AppConstants.usersCollection)
+            .doc(FirebaseService.currentUser!.uid)
+            .set({'fcmToken': token}, SetOptions(merge: true));
+      }
+
+      // 토큰 갱신 처리
+      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+        if (FirebaseService.currentUser != null) {
+          await firestore
+              .collection(AppConstants.usersCollection)
+              .doc(FirebaseService.currentUser!.uid)
+              .set({'fcmToken': newToken}, SetOptions(merge: true));
+        }
+      });
+
+      await messaging.subscribeToTopic('announcements');
+    } catch (e) {
+      print('푸시 알림 초기화 실패: $e');
+    }
   }
 
   // 현재 사용자 가져오기

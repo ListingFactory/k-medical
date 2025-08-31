@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MassageShop {
+class Clinic {
   final String id;
   final String name;
   final String description;
@@ -10,15 +10,19 @@ class MassageShop {
   final double rating;
   final int reviewCount;
   final List<String> images;
-  final List<String> categories;
+  final List<String> specialties;
   final String phoneNumber;
   final String businessHours;
-  final List<Service> services;
+  final List<ClinicService> services;
   final bool isFavorite;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? website;
+  final List<String> amenities;
+  final List<String> doctors;
+  final String? chiefDirector;
 
-  MassageShop({
+  Clinic({
     required this.id,
     required this.name,
     required this.description,
@@ -28,20 +32,24 @@ class MassageShop {
     required this.rating,
     required this.reviewCount,
     required this.images,
-    required this.categories,
+    required this.specialties,
     required this.phoneNumber,
     required this.businessHours,
     required this.services,
     this.isFavorite = false,
     required this.createdAt,
     required this.updatedAt,
+    this.website,
+    this.amenities = const [],
+    this.doctors = const [],
+    this.chiefDirector,
   });
 
   // Firestore에서 데이터 생성
-  factory MassageShop.fromFirestore(DocumentSnapshot doc) {
+  factory Clinic.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
     
-    return MassageShop(
+    return Clinic(
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
@@ -51,14 +59,18 @@ class MassageShop {
       rating: (data['rating'] ?? 0.0).toDouble(),
       reviewCount: data['reviewCount'] ?? 0,
       images: List<String>.from(data['images'] ?? []),
-      categories: List<String>.from(data['categories'] ?? []),
+      specialties: List<String>.from(data['specialties'] ?? []),
       phoneNumber: data['phoneNumber'] ?? '',
       businessHours: data['businessHours'] ?? '',
       services: (data['services'] as List<dynamic>? ?? [])
-          .map((service) => Service.fromMap(service))
+          .map((service) => ClinicService.fromMap(service))
           .toList(),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      website: data['website'],
+      amenities: List<String>.from(data['amenities'] ?? []),
+      doctors: List<String>.from(data['doctors'] ?? []),
+      chiefDirector: data['chiefDirector'],
     );
   }
 
@@ -73,17 +85,21 @@ class MassageShop {
       'rating': rating,
       'reviewCount': reviewCount,
       'images': images,
-      'categories': categories,
+      'specialties': specialties,
       'phoneNumber': phoneNumber,
       'businessHours': businessHours,
       'services': services.map((service) => service.toMap()).toList(),
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
+      'website': website,
+      'amenities': amenities,
+      'doctors': doctors,
+      'chiefDirector': chiefDirector,
     };
   }
 
-  // 복사본 생성 (isFavorite 변경용)
-  MassageShop copyWith({
+  // 복사본 생성
+  Clinic copyWith({
     String? id,
     String? name,
     String? description,
@@ -93,15 +109,19 @@ class MassageShop {
     double? rating,
     int? reviewCount,
     List<String>? images,
-    List<String>? categories,
+    List<String>? specialties,
     String? phoneNumber,
     String? businessHours,
-    List<Service>? services,
+    List<ClinicService>? services,
     bool? isFavorite,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? website,
+    List<String>? amenities,
+    List<String>? doctors,
+    String? chiefDirector,
   }) {
-    return MassageShop(
+    return Clinic(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
@@ -111,66 +131,57 @@ class MassageShop {
       rating: rating ?? this.rating,
       reviewCount: reviewCount ?? this.reviewCount,
       images: images ?? this.images,
-      categories: categories ?? this.categories,
+      specialties: specialties ?? this.specialties,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       businessHours: businessHours ?? this.businessHours,
       services: services ?? this.services,
       isFavorite: isFavorite ?? this.isFavorite,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      website: website ?? this.website,
+      amenities: amenities ?? this.amenities,
+      doctors: doctors ?? this.doctors,
+      chiefDirector: chiefDirector ?? this.chiefDirector,
     );
   }
-
-  @override
-  String toString() {
-    return 'MassageShop(id: $id, name: $name, address: $address, rating: $rating)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is MassageShop && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
 }
 
-class Service {
+class ClinicService {
   final String name;
-  final String description;
   final int price;
-  final int duration; // 분 단위
+  final String description;
+  final String duration;
+  final String recovery;
 
-  Service({
+  ClinicService({
     required this.name,
-    required this.description,
     required this.price,
+    required this.description,
     required this.duration,
+    required this.recovery,
   });
 
-  // Map에서 Service 생성
-  factory Service.fromMap(Map<String, dynamic> map) {
-    return Service(
+  factory ClinicService.fromMap(Map<String, dynamic> map) {
+    return ClinicService(
       name: map['name'] ?? '',
-      description: map['description'] ?? '',
       price: map['price'] ?? 0,
-      duration: map['duration'] ?? 0,
+      description: map['description'] ?? '',
+      duration: map['duration'] ?? '',
+      recovery: map['recovery'] ?? '',
     );
   }
 
-  // Service를 Map으로 변환
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'description': description,
       'price': price,
+      'description': description,
       'duration': duration,
+      'recovery': recovery,
     };
   }
+}
 
-  @override
-  String toString() {
-    return 'Service(name: $name, price: $price, duration: $duration)';
-  }
-} 
+
+
+

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "406745677015",
+    "project_id": "healing-on",
+    "storage_bucket": "healing-on.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406745677015:android:a8b90c0da448ccedfec492",
+        "android_client_info": {
+          "package_name": "com.example.k_medical"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTJsVuW25uU86GYUHQlSyBx9GQ9nm5e8w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

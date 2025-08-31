@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'auth/login_screen.dart';
 import '../../core/constants/app_colors.dart';
+import 'admin/admin_dashboard_screen.dart';
+import 'clinic/clinic_dashboard_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -11,12 +13,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        return Scaffold(
-          backgroundColor: AppColors.background,
-          body: !authProvider.isAuthenticated
-              ? _buildGuestView(context)
-              : _buildUserView(context, authProvider),
-        );
+        return !authProvider.isAuthenticated
+            ? _buildGuestView(context)
+            : _buildUserView(context, authProvider);
       },
     );
   }
@@ -24,32 +23,6 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildGuestView(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        // 상단 앱바
-        SliverAppBar(
-          expandedHeight: 0,
-          floating: false,
-          pinned: true,
-          backgroundColor: AppColors.surface,
-          foregroundColor: AppColors.textPrimary,
-          elevation: 0,
-          title: const Text(
-            '내정보',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                // 앱 설정 화면으로 이동
-                _showSettingsDialog(context);
-              },
-              icon: const Icon(Icons.settings),
-            ),
-          ],
-        ),
-        
         // 메인 콘텐츠
         SliverToBoxAdapter(
           child: Padding(
@@ -121,32 +94,6 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildUserView(BuildContext context, AuthProvider authProvider) {
     return CustomScrollView(
       slivers: [
-        // 상단 앱바
-        SliverAppBar(
-          expandedHeight: 0,
-          floating: false,
-          pinned: true,
-          backgroundColor: AppColors.surface,
-          foregroundColor: AppColors.textPrimary,
-          elevation: 0,
-          title: const Text(
-            '내정보',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                // 앱 설정 화면으로 이동
-                _showSettingsDialog(context);
-              },
-              icon: const Icon(Icons.settings),
-            ),
-          ],
-        ),
-        
         // 메인 콘텐츠
         SliverToBoxAdapter(
           child: Padding(
@@ -428,6 +375,7 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildServiceSection(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Column(
       children: [
         // 첫번째 줄
@@ -503,11 +451,35 @@ class ProfileScreen extends StatelessWidget {
             Expanded(
               child: _buildMenuButton(
                 context,
-                Icons.block,
-                '가기싫은 업소',
-                '평점 낮은 업소',
+                Icons.dashboard,
+                authProvider.userType == 'admin'
+                    ? '관리자페이지'
+                    : authProvider.userType == 'clinic'
+                        ? '병원회원페이지'
+                        : '내정보 설정',
+                authProvider.userType == 'admin'
+                    ? '운영자 콘솔'
+                    : authProvider.userType == 'clinic'
+                        ? '병원 대시보드'
+                        : '프로필 및 알림 설정',
                 () {
-                  _showLoginRequiredDialog(context);
+                  if (authProvider.userType == 'admin') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AdminDashboardScreen(),
+                      ),
+                    );
+                  } else if (authProvider.userType == 'clinic') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ClinicDashboardScreen(),
+                      ),
+                    );
+                  } else {
+                    _showSettingsDialog(context);
+                  }
                 },
               ),
             ),

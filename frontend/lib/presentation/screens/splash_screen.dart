@@ -114,9 +114,9 @@ class _SplashScreenState extends State<SplashScreen>
                     
                     const SizedBox(height: 8),
                     
-                    // 앱 설명
+                    // 앱 설명 (K-Medical로 변경)
                     Text(
-                      '구인구직, 중고거래, 역경매를 한 곳에서',
+                      'Premium Healthcare in Korea',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),

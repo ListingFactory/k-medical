@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
-import '../providers/shop_provider.dart';
+
 import 'listing_screen.dart';
 
 class RegionScreen extends StatefulWidget {

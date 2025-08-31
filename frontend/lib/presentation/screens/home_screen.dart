@@ -4,11 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../providers/auth_provider.dart';
-import '../providers/shop_provider.dart';
 import '../providers/favorite_provider.dart';
-import '../widgets/shop_card.dart';
 import '../widgets/banner_slider.dart';
-import 'shop_detail_screen.dart';
 import 'region_screen.dart';
 import 'map_screen.dart';
 import 'listing_screen.dart';
@@ -37,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // 앱 시작 시 데이터 로드
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ShopProvider>().loadAllShops();
       context.read<FavoriteProvider>().initialize();
     });
   }
@@ -129,8 +125,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHomeTab() {
-    return Consumer<ShopProvider>(
-      builder: (context, shopProvider, child) {
         return CustomScrollView(
           slivers: [
             // 상단 바
@@ -149,10 +143,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Row(
                   children: [
-                    // 왼쪽: 힐링ON 아이콘 (홈으로 가는 버튼)
+                    // 왼쪽: 앱 아이콘 + 명칭
                     GestureDetector(
                       onTap: () {
-                        // 홈으로 이동 (현재 화면이므로 아무 동작 안함)
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('이미 홈 화면입니다')),
                         );
@@ -167,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '힐링ON',
+                            'K-Medical',
                             style: TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.bold,
@@ -580,105 +573,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             
-            // 추천 마사지샵 섹션
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '추천 마사지샵',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const RegionScreen(),
-                              ),
-                            );
-                          },
-                          child: const Text('더보기'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    // 로딩 상태 표시
-                    if (shopProvider.isLoading)
-                      const Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    else if (shopProvider.error != null)
-                      Center(
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: AppColors.error,
-                              size: 48,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              shopProvider.error!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: AppColors.error),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                shopProvider.loadAllShops();
-                              },
-                              child: const Text('다시 시도'),
-                            ),
-                          ],
-                        ),
-                      )
-                    else if (shopProvider.filteredShops.isEmpty)
-                      Center(
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.store_outlined,
-                              color: AppColors.textSecondary,
-                              size: 48,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              '마사지샵이 없습니다',
-                              style: TextStyle(color: AppColors.textSecondary),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                shopProvider.seedSampleData();
-                              },
-                              child: const Text('샘플 데이터 추가'),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      // 마사지샵 카드들 표시
-                      _buildShopCards(shopProvider.filteredShops.take(3).toList()),
-                  ],
-                ),
-              ),
-            ),
+
           ],
         );
-      },
-    );
-  }
+      }
 
-  Widget _buildShopCards(List<dynamic> shops) {
+
     return Column(
       children: shops.map((shop) {
         final minPrice = shop.services.isNotEmpty 
@@ -953,22 +853,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTag(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildNearbyTab() {
     return Scaffold(

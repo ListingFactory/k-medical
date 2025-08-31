@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/sns_provider.dart';
 import '../providers/auth_provider.dart';
-import '../widgets/sns_post_card.dart';
+// import '../widgets/sns_post_card.dart';
 import 'sns_create_screen.dart';
 import '../../core/constants/app_colors.dart';
 
@@ -160,7 +160,34 @@ class _SnsScreenState extends State<SnsScreen> {
                           final post = snsProvider.posts[index];
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: SnsPostCard(post: post),
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    post.authorName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(post.content),
+                                ],
+                              ),
+                            ),
                           );
                         },
                         childCount: snsProvider.posts.length,

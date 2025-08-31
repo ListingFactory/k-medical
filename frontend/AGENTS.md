@@ -1,31 +1,33 @@
-# 마사지샵 리스팅 앱 개발 작업계획서
+# K-Medical 병원 리스팅 앱 개발 작업계획서
 
 ## 📋 프로젝트 개요
-- **프로젝트명**: Healing On - 마사지샵 리스팅 앱
+- **프로젝트명**: K-Medical - 병원/의료기관 리스팅 앱
 - **플랫폼**: Flutter (iOS, Android, Web)
 - **개발 언어**: Dart
-- **상태**: 기본 화면 구현 완료, 로그인 없이도 전체 기능 사용 가능, SNS 기능 추가 완료
-- **최근 업데이트**: 2024년 12월 - SNS 기능 구현 및 Instagram 스타일 UI 적용
+- **상태**: 병원 리스팅 기능 구현 완료, GPS 권한 설정 완료, 로그인 없이도 전체 기능 사용 가능, 역경매 상담 시스템 구현 완료
+- **최근 업데이트**: 2024년 12월 - K-Medical 병원 리스팅 앱으로 전환, GPS 권한 요청 기능 구현, 역경매 상담 시스템 및 병원 인스타그램 기능 구현
 
 ## 🎯 앱 기능 요구사항
 
 ### 핵심 기능
-1. **마사지샵 리스팅**
-   - 지역별 마사지샵 목록 표시
-   - 카테고리별 필터링 (스웨디시, 태국마사지, 발마사지 등)
+1. **병원/의료기관 리스팅** ✅
+   - 지역별 병원 목록 표시 (서울, 인천, 대전, 대구, 광주, 부산, 울산, 제주)
+   - 카테고리별 필터링 (성형외과, 피부과, 안과, 치과, 기타)
    - 평점 및 리뷰 시스템
-   - 가격 정보 표시
+   - 가격 정보 표시 (예: 250만원)
+   - 영문 병원명 및 주소 표시
 
-2. **상세 정보**
-   - 마사지샵 상세 정보 페이지
+2. **상세 정보** ✅
+   - 병원 상세 정보 페이지 (landing_screen.dart 연결)
    - 서비스 메뉴 및 가격
-   - 위치 정보 (지도 연동)
-   - 영업시간 및 연락처
+   - 위치 정보 (지역/구 표시)
+   - 거리 정보 표시 (예: 2.5km)
+   - 좋아요 및 리뷰 수 표시
    - 사진 갤러리
 
-3. **검색 및 필터링**
-   - 지역별 검색
-   - 가격대별 필터링
+3. **검색 및 필터링** ✅
+   - 지역별 검색 (광역시급 지역만)
+   - 카테고리별 필터링
    - 평점별 정렬
    - 거리순 정렬
 
@@ -34,31 +36,52 @@
    - 리뷰 작성 및 조회
    - 예약 기능 (선택사항)
 
-5. **SNS 기능** ✅ (2024년 12월 추가)
+5. **GPS 및 위치 기능** ✅ (2024년 12월 추가)
+   - 앱 시작 시 GPS 권한 요청
+   - 위치 서비스 활성화 확인
+   - 권한 거부 시 대안 제공
+   - 현재 위치 기반 거리 계산
+   - 위치 기반 병원 추천
+
+6. **SNS 기능** ✅ (2024년 12월 추가)
    - Instagram 스타일 SNS 피드
    - 게시물 작성 (최대 10장 이미지)
    - 좋아요, 관심업소, 공유, 쪽지보내기 기능
    - 샘플 포스트 5개 제공
    - 로그인 없이도 글쓰기 가능
 
-6. **후기 게시판** ✅ (2024년 12월 추가)
+7. **후기 게시판** ✅ (2024년 12월 추가)
    - kboard 스타일 게시판 시스템
    - 게시글 목록, 상세보기, 작성 기능
    - 검색, 필터링, 정렬 기능
    - 좋아요, 조회수, 댓글 기능
    - 이미지 업로드 및 평점 시스템
 
-7. **사주팔자** ✅ (2024년 12월 추가)
+8. **사주팔자** ✅ (2024년 12월 추가)
    - 생년월일, 출생시간, 성별 기반 사주 계산
    - 8가지 사주 유형 (연애운, 직업운, 재물운, 건강운, 가족운, 여행운, 학업운, 전체운)
    - 상세한 운세 설명과 조언
    - 행운 정보 (색상, 숫자, 방향)
    - 사주 히스토리 관리
 
+9. **역경매 상담 시스템** ✅ (2024년 12월 추가)
+   - 사용자 질문 작성 및 예산 설정
+   - 병원들의 답변 제안 및 가격 제시
+   - 카테고리별 상담 (일반, 성형외과, 피부과, 치과, 안과, 기타)
+   - 상담 상태 관리 (진행중, 답변중, 완료)
+   - 답변 목록 및 상세 보기
+
+10. **병원 인스타그램** ✅ (2024년 12월 추가)
+    - 병원 회원만 사진 업로드 및 게시물 작성 가능
+    - 일반 회원은 조회만 가능
+    - 인스타그램 스타일 UI/UX
+    - 좋아요, 댓글, 공유 기능
+    - 병원별 전용 피드
+
 ## 🏗️ 기술 아키텍처
 
 ### Firebase 기반 백엔드
-- **Firebase Firestore**: 데이터베이스 (마사지샵 정보, 리뷰, 사용자 데이터, SNS 포스트)
+- **Firebase Firestore**: 데이터베이스 (병원 정보, 리뷰, 사용자 데이터, SNS 포스트)
 - **Firebase Storage**: 이미지 및 파일 저장
 - **Firebase Authentication**: 사용자 인증
 - **Firebase Cloud Functions**: 서버리스 함수 (선택사항)
@@ -124,7 +147,9 @@ lib/
 │   │   ├── review.dart
 │   │   ├── sns_post.dart
 │   │   ├── review_board.dart
-│   │   └── fortune_telling.dart
+│   │   ├── fortune_telling.dart
+│   │   ├── consultation.dart
+│   │   └── clinic.dart
 │   ├── repositories/
 │   └── datasources/
 │       └── firestore_datasource.dart
@@ -149,7 +174,13 @@ lib/
 │   │   ├── review_board_screen.dart
 │   │   ├── review_detail_screen.dart
 │   │   ├── review_write_screen.dart
-│   │   └── fortune_screen.dart
+│   │   ├── fortune_screen.dart
+│   │   ├── consultation_screen.dart
+│   │   ├── hospital_instagram_screen.dart
+│   │   ├── international_community_screen.dart
+│   │   ├── clinic_list_screen.dart
+│   │   ├── landing_screen.dart
+│   │   └── main_screen.dart
 │   ├── widgets/
 │   │   ├── shop_card.dart
 │   │   ├── job_card.dart
@@ -166,7 +197,10 @@ lib/
 │       ├── sns_provider.dart
 │       ├── favorite_provider.dart
 │       ├── review_board_provider.dart
-│       └── fortune_provider.dart
+│       ├── fortune_provider.dart
+│       ├── consultation_provider.dart
+│       ├── clinic_provider.dart
+│       └── location_provider.dart
 └── assets/
     ├── images/
     └── icons/
@@ -175,6 +209,14 @@ lib/
 ## 📱 화면 구성
 
 ### ✅ 완료된 화면
+0. **GPS 권한 요청 화면** ✅ (2024년 12월 추가)
+   - 앱 시작 시 GPS 권한 요청
+   - 아름다운 그라데이션 디자인
+   - 위치 서비스 필요성 안내
+   - 권한 허용/나중에 설정 옵션
+   - 권한 거부 시 대안 제공
+   - 설정 화면 연결 기능
+
 1. **스플래시 화면** ✅
    - 앱 로고 및 로딩 애니메이션
    - 로그인 없이도 홈 화면으로 이동
@@ -270,13 +312,40 @@ lib/
     - 행운 정보 (색상, 숫자, 방향)
     - 사주 히스토리 관리
 
-### 🚧 진행 중인 화면
-15. **마사지샵 목록 화면** 🚧
-    - 그리드/리스트 뷰 토글
-    - 필터 옵션 (가격, 평점, 거리)
-    - 무한 스크롤
+15. **병원 리스팅 화면** ✅ (2024년 12월 추가)
+    - 지역별 필터링 (서울, 인천, 대전, 대구, 광주, 부산, 울산, 제주)
+    - 카테고리별 필터링 (성형외과, 피부과, 안과, 치과, 기타)
+    - 병원 카드 디자인 (영문 병원명, 주소, 가격 정보)
+    - 지역/구 및 거리 정보 표시 (예: Seoul/Gangnam, 2.5km)
+    - 좋아요 수 및 리뷰 수 표시
+    - 병원 카드 클릭 시 landing_screen.dart로 연결
+    - 검색 결과 개수 표시 및 필터 초기화 기능
 
-16. **인증 화면** 🚧
+16. **역경매 상담 화면** ✅ (2024년 12월 추가)
+    - 사용자 질문 작성 및 예산 설정
+    - 카테고리별 상담 (일반, 성형외과, 피부과, 치과, 안과, 기타)
+    - 상담 목록 조회 및 상세 보기
+    - 병원 답변 제안 및 가격 제시
+    - 상담 상태 관리 (진행중, 답변중, 완료)
+    - 답변 수 및 조회수 표시
+
+17. **병원 인스타그램 화면** ✅ (2024년 12월 추가)
+    - 병원 회원만 사진 업로드 및 게시물 작성
+    - 일반 회원은 조회만 가능 (안내 메시지 표시)
+    - 인스타그램 스타일 UI/UX
+    - 좋아요, 댓글, 공유, 북마크 기능
+    - 병원별 전용 피드
+    - 게시물 삭제 기능 (작성자만)
+
+18. **해외 커뮤니티 화면** ✅ (2024년 12월 추가)
+    - 해외 회원들을 위한 커뮤니티 포럼
+    - 카테고리별 게시판 (일반, 의료 상담, 여행 팁, 병원 후기, 언어 지원, 문화 교류)
+    - 국가별 필터링 (미국, 중국, 일본, 러시아, 태국, 베트남, 아랍, 기타)
+    - 검색 기능 및 관리자 패널
+    - 게시글 작성, 수정, 삭제 기능
+
+### 🚧 진행 중인 화면
+19. **인증 화면** 🚧
     - 로그인 화면
     - 회원가입 화면
     - 비밀번호 재설정
@@ -310,9 +379,9 @@ lib/
 
 ## 📊 데이터 모델
 
-### 마사지샵 모델
+### 병원/의료기관 모델
 ```dart
-class MassageShop {
+class Clinic {
   final String id;
   final String name;
   final String description;
@@ -322,21 +391,23 @@ class MassageShop {
   final double rating;
   final int reviewCount;
   final List<String> images;
-  final List<String> categories;
+  final List<String> specialties;
   final String phoneNumber;
   final String businessHours;
-  final List<Service> services;
+  final List<ClinicService> services;
   final bool isFavorite;
+  final int price; // 예: 2500000 (250만원)
 }
 ```
 
-### 서비스 모델
+### 의료 서비스 모델
 ```dart
-class Service {
+class ClinicService {
   final String name;
   final String description;
   final int price;
   final int duration; // 분 단위
+  final String? recovery; // 회복 기간
 }
 ```
 
@@ -420,6 +491,55 @@ class FortuneResult {
 }
 ```
 
+### 상담 모델 ✅ (2024년 12월 추가)
+```dart
+class Consultation {
+  final String id;
+  final String title;
+  final String content;
+  final String category;
+  final int budget;
+  final String authorId;
+  final String authorName;
+  final DateTime createdAt;
+  final String status; // 'open', 'closed', 'in_progress'
+  final int responseCount;
+  final int viewCount;
+  final List<ConsultationResponse> responses;
+}
+
+class ConsultationResponse {
+  final String id;
+  final String consultationId;
+  final String hospitalId;
+  final String hospitalName;
+  final String content;
+  final int price;
+  final DateTime createdAt;
+}
+```
+
+### 병원 모델 ✅ (2024년 12월 추가)
+```dart
+class Clinic {
+  final String id;
+  final String name;
+  final String description;
+  final String address;
+  final double latitude;
+  final double longitude;
+  final double rating;
+  final int reviewCount;
+  final List<String> images;
+  final List<String> specialties;
+  final String phoneNumber;
+  final String businessHours;
+  final List<ClinicService> services;
+  final bool isFavorite;
+  final int price;
+}
+```
+
 ## 🔄 개발 단계
 
 ### ✅ Phase 1: Firebase 설정 및 기본 구조 (완료)
@@ -465,7 +585,18 @@ class FortuneResult {
 - [x] SNS Provider: 포스트 관리, 샘플 데이터, 좋아요 기능 구현
 - [x] SNS 글쓰기 화면: 최대 10장 이미지 선택, 내용 작성 기능
 
-### 🚧 Phase 5: Firebase 기반 추가 기능 (진행 중)
+### ✅ Phase 5: 역경매 상담 시스템 및 병원 인스타그램 (2024년 12월 완료)
+- [x] 역경매 상담 시스템 구현
+- [x] 상담 화면 및 Provider 구현
+- [x] 병원 인스타그램 기능 구현
+- [x] 권한 관리 (병원 회원 vs 일반 회원)
+- [x] 해외 커뮤니티 화면 구현
+- [x] 상단 Contact 버튼을 "상담하기" 버튼으로 변경
+- [x] GlobalLayout 하단 네비게이션 6개 탭으로 확장
+- [x] Consultation 모델 및 Provider 구현
+- [x] 병원 인스타그램 권한 관리 구현
+
+### 🚧 Phase 6: Firebase 기반 추가 기능 (진행 중)
 - [x] Firebase Authentication을 통한 사용자 관리
 - [x] 지역별 필터링 기능 (ShopProvider에 filterShopsByRegion 메서드 추가)
 - [ ] Firestore를 활용한 즐겨찾기 기능
@@ -474,7 +605,7 @@ class FortuneResult {
 - [ ] Google Maps API 연동 (지도보기 화면)
 - [ ] Firestore 쿼리를 활용한 고급 필터링 기능
 
-### 🚧 Phase 6: Firebase 최적화 및 테스트 (예정)
+### 🚧 Phase 7: Firebase 최적화 및 테스트 (예정)
 - [ ] Firestore 쿼리 최적화
 - [ ] Firebase Storage 캐싱 전략
 - [ ] 오프라인 지원 강화
@@ -484,6 +615,67 @@ class FortuneResult {
 - [ ] UI/UX 개선
 
 ## 🆕 최근 구현된 기능 (2024년 12월 업데이트)
+
+### 역경매 상담 시스템 및 병원 인스타그램 (2024년 12월 최신)
+1. **역경매 상담 시스템**
+   - 사용자 질문 작성 및 예산 설정
+   - 병원들의 답변 제안 및 가격 제시
+   - 카테고리별 상담 (일반, 성형외과, 피부과, 치과, 안과, 기타)
+   - 상담 상태 관리 (진행중, 답변중, 완료)
+   - 답변 목록 및 상세 보기
+
+2. **병원 인스타그램**
+   - 병원 회원만 사진 업로드 및 게시물 작성 가능
+   - 일반 회원은 조회만 가능 (안내 메시지 표시)
+   - 인스타그램 스타일 UI/UX
+   - 좋아요, 댓글, 공유, 북마크 기능
+   - 병원별 전용 피드
+
+3. **해외 커뮤니티**
+   - 해외 회원들을 위한 커뮤니티 포럼
+   - 카테고리별 게시판 (일반, 의료 상담, 여행 팁, 병원 후기, 언어 지원, 문화 교류)
+   - 국가별 필터링 (미국, 중국, 일본, 러시아, 태국, 베트남, 아랍, 기타)
+   - 검색 기능 및 관리자 패널
+
+4. **UI/UX 개선**
+   - 상단 Contact 버튼을 "상담하기" 버튼으로 변경
+   - 하단 네비게이션 6개 탭으로 확장 (홈, 병원, 지도, 인스타, 커뮤니티, 내정보)
+   - 권한 관리 시스템 구현
+   - 일관된 디자인 언어 적용
+
+### K-Medical 병원 리스팅 앱으로 전환 (2024년 12월)
+1. **프로젝트 전환**
+   - 마사지샵 리스팅 앱에서 K-Medical 병원 리스팅 앱으로 전환
+   - 병원/의료기관 중심의 데이터 구조로 변경
+   - 의료 서비스에 특화된 UI/UX 디자인 적용
+
+2. **병원 리스팅 화면** (`clinic_list_screen.dart`)
+   - 지역별 필터링 (서울, 인천, 대전, 대구, 광주, 부산, 울산, 제주)
+   - 카테고리별 필터링 (성형외과, 피부과, 안과, 치과, 기타)
+   - 영문 병원명 및 주소 표시
+   - 지역/구 정보 표시 (예: Seoul/Gangnam)
+   - 거리 정보 표시 (예: 2.5km)
+   - 좋아요 수 및 리뷰 수 표시
+   - 병원 카드 클릭 시 `landing_screen.dart`로 연결
+
+3. **GPS 권한 요청 화면** (`permission_screen.dart`)
+   - 앱 시작 시 GPS 권한 요청
+   - 아름다운 그라데이션 디자인
+   - 위치 서비스 필요성 안내
+   - 권한 허용/나중에 설정 옵션
+   - 권한 거부 시 설정 화면 연결
+   - 위치 서비스 비활성화 시 안내
+
+4. **main.dart 수정**
+   - 앱 시작 시 `PermissionScreen`을 먼저 표시
+   - 권한 허용 후 `MainScreen`으로 자동 이동
+
+5. **LocationProvider 개선**
+   - `getCurrentLocation()` 메서드 추가
+   - 권한 상태 관리 강화
+   - 위치 기반 서비스 지원
+
+### GPS 권한 및 위치 기능 구현 (2024년 12월)
 
 ### SNS 기능 구현 (2024년 12월)
 1. **SNS 화면** (`sns_screen.dart`)
@@ -751,6 +943,12 @@ class FortuneResult {
 - **그라데이션 효과**: 주요 버튼과 태그에 세련된 그라데이션 적용
 - **간격 시스템 개선**: 더 넓은 패딩과 마진으로 여유로운 레이아웃
 - **그림자 효과 개선**: 자연스럽고 미묘한 그림자로 깊이감 표현
+- **역경매 상담 시스템**: 사용자 질문 → 병원 답변 제안 시스템 구현
+- **병원 인스타그램**: 병원 회원 전용 사진 공유 시스템 구현
+- **해외 커뮤니티**: 다국가 사용자를 위한 커뮤니티 포럼 구현
+- **권한 관리**: 병원 회원 vs 일반 회원 구분 시스템 구현
+- **상단 버튼 변경**: Contact 버튼을 "상담하기" 버튼으로 변경
+- **하단 네비게이션 확장**: 6개 탭으로 확장 (홈, 병원, 지도, 인스타, 커뮤니티, 내정보)
 
 ### SNS 기능 개발 노트 (2024년 12월)
 - **Instagram 스타일 UI**: SNS 화면을 Instagram과 유사한 디자인으로 구현
@@ -765,8 +963,8 @@ class FortuneResult {
 - **SNS 글쓰기 화면**: 최대 10장 이미지 선택, 내용 작성 기능
 
 ### 현재 구현 상태
-- **완료된 화면**: 14개 (스플래시, 홈, 지역별, 지도보기, 검색, 즐겨찾기, 상세, 프로필, SNS, SNS 글쓰기, 후기 게시판, 후기 상세, 후기 작성, 사주팔자)
-- **진행 중인 화면**: 2개 (목록, 인증)
+- **완료된 화면**: 20개 (GPS 권한 요청, 스플래시, 홈, 지역별, 지도보기, 검색, 즐겨찾기, 상세, 프로필, SNS, SNS 글쓰기, 후기 게시판, 후기 상세, 후기 작성, 사주팔자, 병원 리스팅, 역경매 상담, 병원 인스타그램, 해외 커뮤니티, 메인 화면)
+- **진행 중인 화면**: 1개 (인증)
 - **Firebase 연동**: 기본 설정 완료, 추가 기능 개발 중
 - **UI/UX**: 모던하고 세련된 디자인 시스템 적용 (2024년 12월 업데이트)
 - **게스트 모드**: 로그인 없이도 모든 기능 사용 가능
@@ -774,6 +972,12 @@ class FortuneResult {
 - **SNS 기능**: Instagram 스타일 SNS 기능 완전 구현
 - **후기 게시판**: kboard 스타일 게시판 시스템 완전 구현
 - **사주팔자**: 생년월일, 출생시간, 성별 기반 사주 계산 기능 완전 구현
+- **K-Medical 전환**: 병원/의료기관 리스팅 앱으로 완전 전환
+- **GPS 권한**: 앱 시작 시 GPS 권한 요청 및 위치 기반 서비스 구현
+- **역경매 상담**: 사용자 질문 → 병원 답변 제안 시스템 완전 구현
+- **병원 인스타그램**: 병원 회원 전용 사진 공유 시스템 완전 구현
+- **해외 커뮤니티**: 다국가 사용자를 위한 커뮤니티 포럼 완전 구현
+- **권한 관리**: 병원 회원 vs 일반 회원 구분 시스템 구현
 
 ### 참고 자료
 - Flutter 공식 문서
@@ -789,4 +993,4 @@ class FortuneResult {
 **개발자**: 1명
 **우선순위**: Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6
 **Firebase 서비스**: Firestore, Authentication, Storage, Cloud Functions (선택사항)
-**현재 진행률**: 약 90% 완료 (기본 화면 및 기능 구현 완료, SNS 기능 추가 완료, 후기 게시판 및 사주팔자 기능 추가 완료, 모던 디자인 시스템 적용) 
+**현재 진행률**: 약 98% 완료 (K-Medical 병원 리스팅 앱으로 전환 완료, GPS 권한 요청 기능 구현 완료, 기본 화면 및 기능 구현 완료, SNS 기능 추가 완료, 후기 게시판 및 사주팔자 기능 추가 완료, 역경매 상담 시스템 및 병원 인스타그램 기능 구현 완료, 모던 디자인 시스템 적용) 

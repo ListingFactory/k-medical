@@ -1,7 +1,7 @@
 # k_medical
 
 ## 개발 환경
-- Frontend: Flutter (복제: healing_on)
+- Frontend: Flutter (k_medical)
 - Backend: Node.js (Express + TypeScript)
 - DB: MySQL 8 (docker-compose)
 - ORM: Prisma

@@ -209,6 +209,22 @@ class LocationProvider extends ChangeNotifier {
     }
   }
 
+  /// 현재 위치 가져오기 (외부에서 호출용)
+  Future<Position?> getCurrentLocation() async {
+    _setLoading(true);
+    
+    try {
+      _currentPosition = await _locationService.getCurrentLocation();
+      notifyListeners();
+      return _currentPosition;
+    } catch (e) {
+      print('현재 위치 가져오기 오류: $e');
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   /// 로딩 상태 설정
   void _setLoading(bool loading) {
     _isLoading = loading;

@@ -1,6 +1,6 @@
 {
-    "name": "healing_on",
-    "short_name": "healing_on",
+      "name": "k_medical",
+  "short_name": "k_medical",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

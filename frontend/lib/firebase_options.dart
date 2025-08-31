@@ -50,20 +50,19 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDTJsVuW25uU86GYUHQlSyBx9GQ9nm5e8w',
-    appId: '1:406745677015:android:a8b90c0da448ccedfec492',
-    messagingSenderId: '406745677015',
-    projectId: 'healing-on',
-    storageBucket: 'healing-on.appspot.com',
+    apiKey: 'AIzaSyD4cUGyALOwu9evehwruLRx9ilCg_IB_Zg',
+    appId: '1:524336249519:android:54afc1d0e6f21c2af5b25a',
+    messagingSenderId: '524336249519',
+    projectId: 'k-medical-d6be6',
+    storageBucket: 'k-medical-d6be6.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAHRAojRuJ_Rzw8W_X6Np1LWGPG_HrXXvk',
-    appId: '1:406745677015:ios:8c0b7a0038311301fec492',
-    messagingSenderId: '406745677015',
-    projectId: 'healing-on',
-    storageBucket: 'healing-on.appspot.com',
-    iosClientId: '406745677015-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAgtSUbo2QCSUB3FO5rsQht7lXx3N0aDnY',
+    appId: '1:524336249519:ios:bb5bceee955a2e15f5b25a',
+    messagingSenderId: '524336249519',
+    projectId: 'k-medical-d6be6',
+    storageBucket: 'k-medical-d6be6.firebasestorage.app',
     iosBundleId: 'com.example.healingOn',
   );
 

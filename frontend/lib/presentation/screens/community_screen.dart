@@ -33,60 +33,40 @@ class _CommunityScreenState extends State<CommunityScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // 상단 앱바
-          SliverAppBar(
-            expandedHeight: 0,
-            floating: false,
-            pinned: true,
-            backgroundColor: AppColors.surface,
-            foregroundColor: AppColors.textPrimary,
-            elevation: 0,
-            title: const Text(
-              '커뮤니티',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-          ),
-          
-          // 탭바
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _SliverAppBarDelegate(
-              TabBar(
-                controller: _tabController,
-                labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.textSecondary,
-                indicatorColor: AppColors.primary,
-                tabs: const [
-                  Tab(text: '후기'),
-                  Tab(text: '구인구직'),
-                  Tab(text: '중고거래'),
-                  Tab(text: '실시간찾기'),
-                ],
-              ),
-            ),
-          ),
-          
-          // 탭 콘텐츠
-          SliverFillRemaining(
-            child: TabBarView(
+    return CustomScrollView(
+      slivers: [
+        // 탭바
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _SliverAppBarDelegate(
+            TabBar(
               controller: _tabController,
-              children: [
-                _buildReviewsTab(),
-                _buildJobTab(),
-                _buildMarketTab(),
-                _buildAuctionTab(),
+              labelColor: AppColors.primary,
+              unselectedLabelColor: AppColors.textSecondary,
+              indicatorColor: AppColors.primary,
+              tabs: const [
+                Tab(text: '후기'),
+                Tab(text: '구인구직'),
+                Tab(text: '중고거래'),
+                Tab(text: '실시간찾기'),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+        
+        // 탭 콘텐츠
+        SliverFillRemaining(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildReviewsTab(),
+              _buildJobTab(),
+              _buildMarketTab(),
+              _buildAuctionTab(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

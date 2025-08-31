@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
-import '../providers/shop_provider.dart';
-import '../widgets/shop_card.dart';
-import 'shop_detail_screen.dart';
+
+
 import 'listing_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -339,7 +338,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                             MaterialPageRoute(
                                               builder: (context) => ListingScreen(
                                                 searchQuery: _searchController.text.isNotEmpty ? _searchController.text : null,
-                                                category: _selectedCategory != '전체' ? _selectedCategory : null,
+                                                specialty: _selectedCategory != '전체' ? _selectedCategory : null,
                                                 priceRange: _selectedPriceRange != '전체' ? _selectedPriceRange : null,
                                               ),
                                             ),

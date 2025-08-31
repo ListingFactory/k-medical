@@ -8,6 +8,7 @@ class ReviewBoardProvider with ChangeNotifier {
   final Uuid _uuid = const Uuid();
   
   List<ReviewBoard> _reviews = [];
+  List<ReviewBoard> _posts = [];
   bool _isLoading = false;
   String _error = '';
   int _totalCount = 0;
@@ -16,11 +17,105 @@ class ReviewBoardProvider with ChangeNotifier {
   
   // Getters
   List<ReviewBoard> get reviews => _reviews;
+  List<ReviewBoard> get posts => _posts;
   bool get isLoading => _isLoading;
   String get error => _error;
   int get totalCount => _totalCount;
   bool get hasMore => _hasMore;
   
+  // 해외 커뮤니티 게시글 로드
+  Future<void> loadPosts() async {
+    try {
+      _isLoading = true;
+      _error = '';
+      notifyListeners();
+
+      // 샘플 게시글 로드
+      if (_posts.isEmpty) {
+        _loadSamplePosts();
+      }
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = '게시글을 불러오는데 실패했습니다: $e';
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void _loadSamplePosts() {
+    final samplePosts = [
+      ReviewBoard(
+        id: 'post1',
+        title: '한국 의료 여행 경험 공유',
+        content: '안녕하세요! 미국에서 한국으로 의료 여행을 왔는데 정말 만족스러웠습니다. 의사 선생님들이 친절하시고 시설도 깔끔했어요.',
+        authorId: 'user1',
+        authorName: 'Sarah',
+        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+        updatedAt: DateTime.now().subtract(const Duration(hours: 2)),
+        viewCount: 45,
+        likeCount: 12,
+        commentCount: 3,
+        category: 'medical_advice',
+        country: 'usa',
+        likes: 12,
+      ),
+      ReviewBoard(
+        id: 'post2',
+        title: '한국 치과 치료 후기',
+        content: '중국에서 한국 치과 치료를 받았는데 가격도 합리적이고 기술도 훌륭했습니다. 추천합니다!',
+        authorId: 'user2',
+        authorName: 'Li Wei',
+        createdAt: DateTime.now().subtract(const Duration(hours: 4)),
+        updatedAt: DateTime.now().subtract(const Duration(hours: 4)),
+        viewCount: 67,
+        likeCount: 18,
+        commentCount: 5,
+        category: 'hospital_reviews',
+        country: 'china',
+        likes: 18,
+      ),
+      ReviewBoard(
+        id: 'post3',
+        title: '한국 여행 팁 공유',
+        content: '일본에서 한국 여행을 왔는데 교통편과 숙박에 대한 팁을 공유하고 싶습니다.',
+        authorId: 'user3',
+        authorName: '田中太郎',
+        createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+        updatedAt: DateTime.now().subtract(const Duration(hours: 6)),
+        viewCount: 89,
+        likeCount: 25,
+        commentCount: 8,
+        category: 'travel_tips',
+        country: 'japan',
+        likes: 25,
+      ),
+      ReviewBoard(
+        id: 'post4',
+        title: '한국어 학습 도움 요청',
+        content: '러시아에서 온 의료 관광객입니다. 한국어를 배우고 싶은데 추천할 수 있는 방법이 있나요?',
+        authorId: 'user4',
+        authorName: 'Ivan',
+        createdAt: DateTime.now().subtract(const Duration(hours: 8)),
+        updatedAt: DateTime.now().subtract(const Duration(hours: 8)),
+        viewCount: 34,
+        likeCount: 8,
+        commentCount: 2,
+        category: 'language_support',
+        country: 'russia',
+        likes: 8,
+      ),
+    ];
+
+    _posts = samplePosts;
+  }
+
+  void deletePost(String postId) {
+    _posts.removeWhere((post) => post.id == postId);
+    notifyListeners();
+  }
+
   // 샘플 데이터 생성
   List<ReviewBoard> _generateSampleData() {
     return [

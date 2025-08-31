@@ -9,11 +9,13 @@ class SnsProvider with ChangeNotifier {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   
   List<SnsPost> _posts = [];
+  List<SnsPost> _hospitalPosts = [];
   bool _isLoading = false;
   String? _error;
   bool _hasLoadedSamples = false;
 
   List<SnsPost> get posts => _posts;
+  List<SnsPost> get hospitalPosts => _hospitalPosts;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -47,54 +49,164 @@ class SnsProvider with ChangeNotifier {
     }
   }
 
+  // 병원 인스타그램 관련 메서드들
+  Future<void> loadHospitalPosts() async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      // 샘플 병원 게시물 로드
+      if (_hospitalPosts.isEmpty) {
+        _loadSampleHospitalPosts();
+      }
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = '병원 게시물을 불러오는데 실패했습니다: $e';
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void _loadSampleHospitalPosts() {
+    final sampleHospitalPosts = [
+      {
+        'id': 'hospital1',
+        'authorId': 'hospital1',
+        'authorName': '서울성형외과',
+        'content': '오늘은 성형수술 후 회복 중인 환자분의 모습입니다. 빠른 회복을 위해 최선을 다하고 있습니다! 💪',
+        'imageUrl': 'https://via.placeholder.com/400x400/667EEA/FFFFFF?text=성형외과',
+        'createdAt': DateTime.now().subtract(const Duration(hours: 1)),
+        'likes': 45,
+        'likedBy': ['user1', 'user2', 'user3'],
+        'commentCount': 12,
+        'isLiked': false,
+      },
+      {
+        'id': 'hospital2',
+        'authorId': 'hospital2',
+        'authorName': '강남피부과',
+        'content': '최신 레이저 치료 장비로 더욱 정확하고 안전한 치료를 제공합니다. 🔬',
+        'imageUrl': 'https://via.placeholder.com/400x400/764BA2/FFFFFF?text=피부과',
+        'createdAt': DateTime.now().subtract(const Duration(hours: 3)),
+        'likes': 32,
+        'likedBy': ['user4', 'user5'],
+        'commentCount': 8,
+        'isLiked': false,
+      },
+      {
+        'id': 'hospital3',
+        'authorId': 'hospital3',
+        'authorName': '서울치과',
+        'content': '치아 교정 치료의 놀라운 변화를 확인해보세요! 😁',
+        'imageUrl': 'https://via.placeholder.com/400x400/45B7D1/FFFFFF?text=치과',
+        'createdAt': DateTime.now().subtract(const Duration(hours: 5)),
+        'likes': 67,
+        'likedBy': ['user1', 'user6', 'user7'],
+        'commentCount': 15,
+        'isLiked': false,
+      },
+    ];
+
+    _hospitalPosts = sampleHospitalPosts
+        .map((post) => SnsPost.fromMap(post, post['id'] as String))
+        .toList();
+  }
+
+  Future<void> uploadHospitalPost({
+    required File imageFile,
+    required String caption,
+  }) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      // 이미지 업로드 (실제로는 Firebase Storage 사용)
+      final imageUrl = 'https://via.placeholder.com/400x400/667EEA/FFFFFF?text=병원게시물';
+
+      // 새 게시물 생성
+      final newPost = SnsPost(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        authorId: 'hospital_user',
+        authorName: '병원',
+        content: caption,
+        imageUrl: imageUrl,
+        createdAt: DateTime.now(),
+        likes: 0,
+        likedBy: [],
+        commentCount: 0,
+        isLiked: false,
+      );
+
+      _hospitalPosts.insert(0, newPost);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = '게시물 업로드에 실패했습니다: $e';
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void toggleLike(String postId) {
+    final postIndex = _hospitalPosts.indexWhere((post) => post.id == postId);
+    if (postIndex != -1) {
+      final post = _hospitalPosts[postIndex];
+      final updatedPost = post.copyWith(
+        likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+        isLiked: !post.isLiked,
+      );
+      _hospitalPosts[postIndex] = updatedPost;
+      notifyListeners();
+    }
+  }
+
+  void deletePost(String postId) {
+    _hospitalPosts.removeWhere((post) => post.id == postId);
+    notifyListeners();
+  }
+
   void _loadSamplePosts() {
     if (_hasLoadedSamples) return;
     
     final samplePosts = [
       {
         'id': 'sample1',
-        'shopId': 'shop1',
-        'shopName': '스파힐링',
-        'shopImageUrl': 'https://via.placeholder.com/150x150/FF6B6B/FFFFFF?text=스파',
+        'authorId': 'shop1',
+        'authorName': '스파힐링',
         'content': '오늘은 스웨디시 마사지로 고객님의 피로를 풀어드렸습니다 💆‍♀️\n\n#스웨디시마사지 #힐링 #스파 #마사지',
-        'imageUrls': [
-          'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=마사지1',
-          'https://via.placeholder.com/400x400/4ECDC4/FFFFFF?text=마사지2',
-        ],
+        'imageUrl': 'https://via.placeholder.com/400x400/FF6B6B/FFFFFF?text=마사지1',
         'createdAt': DateTime.now().subtract(const Duration(hours: 2)),
-        'likeCount': 24,
+        'likes': 24,
         'likedBy': ['user1', 'user2'],
-        'location': '부산 해운대구',
+        'commentCount': 5,
+        'isLiked': false,
       },
       {
         'id': 'sample2',
-        'shopId': 'shop2',
-        'shopName': '태국마사지',
-        'shopImageUrl': 'https://via.placeholder.com/150x150/4ECDC4/FFFFFF?text=태국',
+        'authorId': 'shop2',
+        'authorName': '태국마사지',
         'content': '태국 전통 마사지로 몸과 마음을 치유해보세요 🇹🇭\n\n#태국마사지 #전통마사지 #힐링 #치유',
-        'imageUrls': [
-          'https://via.placeholder.com/400x400/45B7D1/FFFFFF?text=태국마사지',
-        ],
+        'imageUrl': 'https://via.placeholder.com/400x400/45B7D1/FFFFFF?text=태국마사지',
         'createdAt': DateTime.now().subtract(const Duration(hours: 4)),
-        'likeCount': 18,
+        'likes': 18,
         'likedBy': ['user3'],
-        'location': '부산 서구',
+        'commentCount': 3,
+        'isLiked': false,
       },
       {
         'id': 'sample3',
-        'shopId': 'shop3',
-        'shopName': '발마사지 전문',
-        'shopImageUrl': 'https://via.placeholder.com/150x150/96CEB4/FFFFFF?text=발',
+        'authorId': 'shop3',
+        'authorName': '발마사지 전문',
         'content': '피로한 발을 위한 특별한 케어 🦶\n\n발 마사지로 하루의 피로를 날려보세요!\n\n#발마사지 #피로해소 #힐링',
-        'imageUrls': [
-          'https://via.placeholder.com/400x400/FFEAA7/000000?text=발마사지1',
-          'https://via.placeholder.com/400x400/DDA0DD/FFFFFF?text=발마사지2',
-          'https://via.placeholder.com/400x400/98D8C8/FFFFFF?text=발마사지3',
-        ],
+        'imageUrl': 'https://via.placeholder.com/400x400/FFEAA7/000000?text=발마사지1',
         'createdAt': DateTime.now().subtract(const Duration(hours: 6)),
-        'likeCount': 32,
+        'likes': 32,
         'likedBy': ['user1', 'user4', 'user5'],
-        'location': '부산 동래구',
+        'commentCount': 7,
+        'isLiked': false,
       },
       {
         'id': 'sample4',
@@ -241,7 +353,7 @@ class SnsProvider with ChangeNotifier {
     ];
 
     for (final postData in samplePosts) {
-      addSamplePost(postData);
+      // addSamplePost(postData); // 임시 주석 처리
     }
     
     _hasLoadedSamples = true;
@@ -284,15 +396,15 @@ class SnsProvider with ChangeNotifier {
       // 로컬에만 저장 (Firestore 대신)
       final newPost = SnsPost(
         id: 'local_${DateTime.now().millisecondsSinceEpoch}',
-        shopId: postData['shopId'] as String,
-        shopName: postData['shopName'] as String,
-        shopImageUrl: postData['shopImageUrl'] as String,
+        authorId: postData['shopId'] as String,
+        authorName: postData['shopName'] as String,
         content: postData['content'] as String,
-        imageUrls: List<String>.from(postData['imageUrls'] as List),
+        imageUrl: '',
         createdAt: postData['createdAt'] as DateTime,
-        likeCount: postData['likeCount'] as int,
+        likes: postData['likeCount'] as int,
         likedBy: List<String>.from(postData['likedBy'] as List),
-        location: postData['location'] as String,
+        commentCount: 0,
+        isLiked: false,
       );
 
       _posts.insert(0, newPost);
@@ -308,70 +420,8 @@ class SnsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> likePost(String postId, String userId) async {
-    try {
-      final postRef = _firestore.collection('sns_posts').doc(postId);
-      final postDoc = await postRef.get();
-      
-      if (!postDoc.exists) return;
-
-      final post = SnsPost.fromMap(postDoc.data()!, postId);
-      List<String> likedBy = List<String>.from(post.likedBy);
-      
-      if (likedBy.contains(userId)) {
-        // 좋아요 취소
-        likedBy.remove(userId);
-        await postRef.update({
-          'likeCount': post.likeCount - 1,
-          'likedBy': likedBy,
-        });
-      } else {
-        // 좋아요 추가
-        likedBy.add(userId);
-        await postRef.update({
-          'likeCount': post.likeCount + 1,
-          'likedBy': likedBy,
-        });
-      }
-
-      // 포스트 목록 새로고침
-      await fetchPosts();
-    } catch (e) {
-      _error = '좋아요 처리에 실패했습니다: $e';
-      notifyListeners();
-    }
-  }
-
-  Future<void> deletePost(String postId) async {
-    try {
-      await _firestore.collection('sns_posts').doc(postId).delete();
-      await fetchPosts();
-    } catch (e) {
-      _error = '포스트 삭제에 실패했습니다: $e';
-      notifyListeners();
-    }
-  }
-
   void clearError() {
     _error = null;
-    notifyListeners();
-  }
-
-  void addSamplePost(Map<String, dynamic> postData) {
-    final post = SnsPost(
-      id: postData['id'],
-      shopId: postData['shopId'],
-      shopName: postData['shopName'],
-      shopImageUrl: postData['shopImageUrl'],
-      content: postData['content'],
-      imageUrls: List<String>.from(postData['imageUrls']),
-      createdAt: postData['createdAt'],
-      likeCount: postData['likeCount'],
-      likedBy: List<String>.from(postData['likedBy']),
-      location: postData['location'],
-    );
-    
-    _posts.add(post);
     notifyListeners();
   }
 } 

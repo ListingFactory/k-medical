@@ -17,6 +17,9 @@ class ReviewBoard {
   final bool isNotice;
   final bool isSecret;
   final String? password;
+  final String category;
+  final String country;
+  final int likes;
 
   ReviewBoard({
     required this.id,
@@ -37,6 +40,9 @@ class ReviewBoard {
     this.isNotice = false,
     this.isSecret = false,
     this.password,
+    this.category = 'general',
+    this.country = 'other',
+    this.likes = 0,
   });
 
   factory ReviewBoard.fromMap(Map<String, dynamic> map) {
@@ -67,6 +73,9 @@ class ReviewBoard {
       isNotice: map['isNotice'] ?? false,
       isSecret: map['isSecret'] ?? false,
       password: map['password'],
+      category: map['category'] ?? 'general',
+      country: map['country'] ?? 'other',
+      likes: map['likes'] ?? 0,
     );
   }
 
@@ -90,6 +99,9 @@ class ReviewBoard {
       'isNotice': isNotice,
       'isSecret': isSecret,
       'password': password,
+      'category': category,
+      'country': country,
+      'likes': likes,
     };
   }
 
@@ -112,6 +124,9 @@ class ReviewBoard {
     bool? isNotice,
     bool? isSecret,
     String? password,
+    String? category,
+    String? country,
+    int? likes,
   }) {
     return ReviewBoard(
       id: id ?? this.id,
@@ -132,6 +147,9 @@ class ReviewBoard {
       isNotice: isNotice ?? this.isNotice,
       isSecret: isSecret ?? this.isSecret,
       password: password ?? this.password,
+      category: category ?? this.category,
+      country: country ?? this.country,
+      likes: likes ?? this.likes,
     );
   }
 

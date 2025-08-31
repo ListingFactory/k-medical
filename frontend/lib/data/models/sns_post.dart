@@ -2,81 +2,81 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SnsPost {
   final String id;
-  final String shopId;
-  final String shopName;
-  final String shopImageUrl;
+  final String authorId;
+  final String authorName;
   final String content;
-  final List<String> imageUrls;
+  final String imageUrl;
   final DateTime createdAt;
-  final int likeCount;
+  final int likes;
   final List<String> likedBy;
-  final String location;
+  final int commentCount;
+  final bool isLiked;
 
   SnsPost({
     required this.id,
-    required this.shopId,
-    required this.shopName,
-    required this.shopImageUrl,
+    required this.authorId,
+    required this.authorName,
     required this.content,
-    required this.imageUrls,
+    required this.imageUrl,
     required this.createdAt,
-    this.likeCount = 0,
+    this.likes = 0,
     this.likedBy = const [],
-    this.location = '',
+    this.commentCount = 0,
+    this.isLiked = false,
   });
 
   factory SnsPost.fromMap(Map<String, dynamic> map, String id) {
     return SnsPost(
       id: id,
-      shopId: map['shopId'] ?? '',
-      shopName: map['shopName'] ?? '',
-      shopImageUrl: map['shopImageUrl'] ?? '',
+      authorId: map['authorId'] ?? '',
+      authorName: map['authorName'] ?? '',
       content: map['content'] ?? '',
-      imageUrls: List<String>.from(map['imageUrls'] ?? []),
+      imageUrl: map['imageUrl'] ?? '',
       createdAt: (map['createdAt'] as Timestamp).toDate(),
-      likeCount: map['likeCount'] ?? 0,
+      likes: map['likes'] ?? 0,
       likedBy: List<String>.from(map['likedBy'] ?? []),
-      location: map['location'] ?? '',
+      commentCount: map['commentCount'] ?? 0,
+      isLiked: map['isLiked'] ?? false,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'shopId': shopId,
-      'shopName': shopName,
-      'shopImageUrl': shopImageUrl,
+      'authorId': authorId,
+      'authorName': authorName,
       'content': content,
-      'imageUrls': imageUrls,
+      'imageUrl': imageUrl,
       'createdAt': createdAt,
-      'likeCount': likeCount,
+      'likes': likes,
       'likedBy': likedBy,
-      'location': location,
+      'commentCount': commentCount,
+      'isLiked': isLiked,
     };
   }
 
   SnsPost copyWith({
     String? id,
-    String? shopId,
-    String? shopName,
-    String? shopImageUrl,
+    String? authorId,
+    String? authorName,
     String? content,
-    List<String>? imageUrls,
+    String? imageUrl,
     DateTime? createdAt,
-    int? likeCount,
+    int? likes,
     List<String>? likedBy,
-    String? location,
+    int? commentCount,
+    bool? isLiked,
   }) {
     return SnsPost(
       id: id ?? this.id,
-      shopId: shopId ?? this.shopId,
-      shopName: shopName ?? this.shopName,
-      shopImageUrl: shopImageUrl ?? this.shopImageUrl,
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
       content: content ?? this.content,
-      imageUrls: imageUrls ?? this.imageUrls,
+      imageUrl: imageUrl ?? this.imageUrl,
       createdAt: createdAt ?? this.createdAt,
-      likeCount: likeCount ?? this.likeCount,
+      likes: likes ?? this.likes,
       likedBy: likedBy ?? this.likedBy,
-      location: location ?? this.location,
+      commentCount: commentCount ?? this.commentCount,
+      isLiked: isLiked ?? this.isLiked,
     );
   }
 } 

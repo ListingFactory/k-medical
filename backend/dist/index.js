@@ -4,10 +4,11 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
+import { env } from './config/env.js';
 dotenv.config();
 const app = express();
 app.use(helmet());
-const corsOriginEnv = process.env.CORS_ORIGIN;
+const corsOriginEnv = env.CORS_ORIGIN;
 const allowedOrigins = corsOriginEnv
     ? corsOriginEnv.split(',').map((value) => value.trim()).filter((value) => value.length > 0)
     : undefined;
@@ -27,7 +28,7 @@ app.use('/api', apiLimiter);
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
 });
-const port = Number(process.env.PORT ?? 4000);
+const port = env.PORT;
 app.listen(port, () => {
     console.log(`API listening on http://localhost:${port}`);
 });

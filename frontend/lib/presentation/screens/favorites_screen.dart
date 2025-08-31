@@ -3,9 +3,8 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/favorite_provider.dart';
-import '../providers/shop_provider.dart';
-import '../widgets/shop_card.dart';
-import 'shop_detail_screen.dart';
+
+
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -21,7 +20,6 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     // 즐겨찾기 화면 진입 시 데이터 로드
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<FavoriteProvider>().initialize();
-      context.read<ShopProvider>().loadAllShops();
     });
   }
 
@@ -56,7 +54,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             return _buildGuestView();
           }
           
-          return _buildFavoritesList();
+          return _buildEmptyFavoritesList();
         },
       ),
     );
@@ -129,9 +127,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
     );
   }
 
-  Widget _buildFavoritesList() {
-    return Consumer2<FavoriteProvider, ShopProvider>(
-      builder: (context, favoriteProvider, shopProvider, child) {
+  Widget _buildEmptyFavoritesList() {
+    return Consumer<FavoriteProvider>(
+      builder: (context, favoriteProvider, child) {
         if (favoriteProvider.isLoading) {
           return const Center(
             child: CircularProgressIndicator(),
@@ -166,12 +164,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           );
         }
 
-        // 즐겨찾기한 마사지샵들 필터링
-        final favoriteShops = shopProvider.shops
-            .where((shop) => favoriteProvider.isFavorite(shop.id))
-            .toList();
-
-        if (favoriteShops.isEmpty) {
+        // 즐겨찾기 기능이 제거됨
+        return Center(
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -183,145 +177,23 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  '즐겨찾기한 마사지샵이 없습니다',
+                  '즐겨찾기 기능이 제거되었습니다',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  '마음에 드는 마사지샵을 찾아서\n즐겨찾기에 추가해보세요!',
+                  '마사지 관련 기능이 제거되어\n즐겨찾기 기능을 사용할 수 없습니다.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: () {
-                    // 홈 화면으로 이동
-                    Navigator.of(context).pop();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    '마사지샵 둘러보기',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ),
               ],
             ),
           );
-        }
 
-        return Column(
-          children: [
-            // 즐겨찾기 개수 표시
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '즐겨찾기 ${favoriteShops.length}개',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      _showClearFavoritesDialog();
-                    },
-                    child: const Text('모두 삭제'),
-                  ),
-                ],
-              ),
-            ),
-            
-            // 즐겨찾기 목록
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: favoriteShops.length,
-                itemBuilder: (context, index) {
-                  final shop = favoriteShops[index];
-                  
-                  // 가격 범위 계산
-                  final minPrice = shop.services.isNotEmpty 
-                      ? shop.services.map((s) => s.price).reduce((a, b) => a < b ? a : b)
-                      : 0;
-                  final maxPrice = shop.services.isNotEmpty 
-                      ? shop.services.map((s) => s.price).reduce((a, b) => a > b ? a : b)
-                      : 0;
-                  
-                  String priceRange = '';
-                  if (minPrice == maxPrice) {
-                    priceRange = '${(minPrice / 10000).toStringAsFixed(0)}만원';
-                  } else {
-                    priceRange = '${(minPrice / 10000).toStringAsFixed(0)}-${(maxPrice / 10000).toStringAsFixed(0)}만원';
-                  }
-                  
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Stack(
-                      children: [
-                        ShopCard(
-                          name: shop.name,
-                          rating: shop.rating,
-                          reviewCount: shop.reviewCount,
-                          address: shop.address,
-                          imageUrl: shop.images.isNotEmpty ? shop.images.first : 'https://via.placeholder.com/300x200',
-                          price: priceRange,
-                          onTap: () {
-                            // 마사지샵 상세 화면으로 이동
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ShopDetailScreen(shop: shop),
-                              ),
-                            );
-                          },
-                        ),
-                        // 삭제 버튼
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.6),
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                favoriteProvider.removeFromFavorites(shop.id);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('즐겨찾기에서 제거되었습니다'),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        );
       },
     );
   }

@@ -1,7 +1,18 @@
 class AppConstants {
   // App Info
-  static const String appName = 'Healing On';
+  static const String appName = 'K-Medical';
   static const String appVersion = '1.0.0';
+  static const List<String> supportedLocales = [
+    'en', // 영어
+    'zh', // 중국어 (간체)
+    'ko', // 한국어
+    'ja', // 일본어
+    'th', // 태국어
+    'vi', // 베트남어
+    'ru', // 러시아어
+    'ar', // 아랍어
+  ];
+  static const String defaultLocale = 'en';
   
   // Firebase Collections
   static const String usersCollection = 'users';

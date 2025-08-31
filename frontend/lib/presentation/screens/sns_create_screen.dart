@@ -4,8 +4,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../providers/sns_provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/shop_provider.dart';
-import '../../data/models/massage_shop.dart';
+
+
 import '../../core/constants/app_colors.dart';
 
 class SnsCreateScreen extends StatefulWidget {
@@ -102,13 +102,13 @@ class _SnsCreateScreenState extends State<SnsCreateScreen> {
       // 게스트 사용자용 임시 정보
       final authProvider = context.read<AuthProvider>();
       final userId = authProvider.isLoggedIn ? authProvider.user!.uid : 'guest_${DateTime.now().millisecondsSinceEpoch}';
-      final shopName = authProvider.isLoggedIn ? (authProvider.user?.displayName ?? '사용자') : '게스트';
-      final shopImageUrl = authProvider.isLoggedIn ? (authProvider.user?.photoURL ?? '') : '';
+              final userName = authProvider.isLoggedIn ? (authProvider.user?.displayName ?? '사용자') : '게스트';
+        final userImageUrl = authProvider.isLoggedIn ? (authProvider.user?.photoURL ?? '') : '';
       
       await context.read<SnsProvider>().createPost(
-        shopId: userId,
-        shopName: shopName,
-        shopImageUrl: shopImageUrl,
+                  shopId: userId,
+          shopName: userName,
+          shopImageUrl: userImageUrl,
         content: _contentController.text.trim(),
         images: _selectedImages,
       );
